@@ -1,0 +1,43 @@
+<!doctype html>
+<link rel="stylesheet" type="text/css" href="/css/style.css">
+
+<html class="no-js" lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>{{ title }}</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+    <!-- Place favicon.ico in the root directory -->
+</head>
+
+<body>
+    <div class="container">
+        <div class="header clearfix">
+            <nav>
+                
+                <h1 class="titleR">Formula 1 Championship</h1>
+                <ul class="nav nav-pills float-left">
+                    <li class="nav-item"><a class="a" href="/">Home</a></li>
+
+                    {{#if isAuthenticated}}
+                    <li class="nav-item"><a class="a" href="/pilots">Pilots</a></li>
+                    <li class="nav-item"><a class="a" href="/teams">Teams</a></li>
+                    <li class="nav-item"><a class="a" href="/circuits">Circuits</a></li>
+                    <li class="nav-item"><a class="a" href="/results">Results</a></li>
+                    <li class="nav-item"><a class="a" href="/stats">Stats</a></li>
+                    <li class="nav-item"><a class="a" href="/logout">Logout</a></li>
+                    {{else}}
+                    <li class="nav-item"><a class="a" href="/login">Login</a></li>
+                    <li class="nav-item"><a class="a" href="/register">Register</a></li>
+                    {{/if}}
+
+                </ul>
+            </nav>
+        </div>
+</body>

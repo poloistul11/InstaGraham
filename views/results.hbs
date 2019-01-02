@@ -1,0 +1,95 @@
+{{> header }}
+
+
+<body background="/img/background.jpg">
+
+    <div class="container">
+        <h1 class="titleR">{{title}}</h1>
+    </div>
+
+
+    <div class="row marketing">
+        <div class="col-lg-4">
+
+            <div class"container">
+                <h3 class="titleR">Select the circuit:</h2>
+            </div>
+
+            {{#each results}}
+            <div class="radioList" id="circuits">
+                <input type="radio" onClick="saveID({{circuit_ID}})" class="subtitleR" id={{circuit_ID}} value={{circuit_ID}}
+                    name="circuit">
+                {{name}}
+            </div>
+            {{/each}}
+
+            <div id="selected-book">{{selected_results}}</div>
+
+        </div>
+
+
+        <div class="col-lg-4">
+            <div class"container">
+                <h3 class="titleR">Select the results category:</h2>
+            </div>
+
+            <button id="buttonTeams" onClick="selectTeams()" type="button" class="btnCategory">Teams</button>
+            <button id="buttonPilots" onClick="selectPilots()" type="button" class="btnCategory">Pilots</button>
+
+
+            <div class="white"> Search results by text input:
+                <form method="POST" action="results/teams2/" +id>
+
+                    <div class="subtitleR">
+                        <label for="team">Team</label>
+
+                        <div class="row marketing">
+                            <div class="col-lg-5">
+                                <input type="text" name="team" class="form-control" placeholder="team name">
+                            </div>
+
+                            <div class="col-lg-2">
+                                <button type="submit" class="btn">Submit</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+
+                <form method="POST" action="results/pilots2/" +id>
+
+                    <div class="subtitleR">
+                        <label for="team">Pilot</label>
+
+                        <div class="row marketing">
+                            <div class="col-lg-5">
+                                <input type="text" name="pilot" class="form-control" placeholder="pilot name">
+                            </div>
+
+                            <div class="col-lg-2">
+                                <button type="submit" class="btn">Submit</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+        <script>
+            function selectTeams() {
+                location.href = "results/teams/" + id;
+            }
+
+            function selectPilots() {
+                location.href = "results/pilots/" + id;
+            }
+
+            function saveID(value) {
+                id = value;
+                console.log(value);
+            }
+        </script>
+
+</body>

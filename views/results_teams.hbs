@@ -1,0 +1,51 @@
+<div class="wrapper">
+
+{{> header }}
+
+<body background="/img/background.jpg">
+
+    <div class="container">
+        <h1 class="titleR">{{title}}</h1>
+    </div>
+
+    <div class="container">
+        <h1 class="listTitle">{{location}}</h1>
+    </div>
+
+    <div class="container">
+        <h2 class="listTitleR">{{date}}</h2>
+    </div>
+
+    <div class="row marketing">
+        <div class="col-lg-6">
+            <ol>
+                {{#each results}}
+                <li class="listItemR"> {{name}}
+                    <div class="row marketing">
+                        <div class="col-lg-6">
+                            <div class="detailR">{{nameTeam}} : </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="detailR">{{time}} </div>
+                        </div>
+                </li>
+                {{/each}}
+            </ol>
+        </div>
+    </div>
+
+    <button id="back" onClick="back()" type="button" class="btnBack">Back</button>
+
+    <script>
+        function back() {
+            location.href = "/results";
+        }
+    </script>
+
+</body>
+
+<div class="space">
+    {{> footer}}
+</div>
+
+</div>

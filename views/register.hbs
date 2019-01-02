@@ -1,0 +1,46 @@
+<div class="wrapper">
+
+{{> header }}
+
+
+<body background="/img/background.jpg">
+
+    <div class="container">
+        <h1 class="titleR">{{title}}</h1>
+
+        {{#if errors}}
+        {{#each errors}}
+        <div class="alert alert-danger" role="alert">
+            {{this.msg}}
+        </div>
+        {{/each}}
+        {{/if}}
+
+
+
+        <form method="POST" action="/register">
+            <div class="subtitleR">
+                <label for="email">Email address</label>
+                <input type="text" name="email" class="form-control" placeholder="Enter email">
+                <small id="emailHelp" class="textR">We'll never share your email with anyone else.</small>
+            </div>
+            <div class="subtitleR">
+                <label for="password">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="Password">
+            </div>
+            <div class="subtitleR">
+                <label for="passwordMatch">Re-enter Password</label>
+                <input type="password" name="passwordMatch" class="form-control" placeholder="Password">
+            </div>
+
+            <button type="submit" class="btn">Submit</button>
+        </form>
+
+    </div>
+</body>
+
+<div class="space">
+    {{> footer}}
+</div>
+
+</div>

@@ -1,0 +1,70 @@
+<div class="wrapper">
+
+{{> header }}
+
+
+<body background="/img/background.jpg">
+    <div class="container">
+        <h1 class="titleR">Insert Pilot</h1>
+    
+        {{#if errors}}
+        {{#each errors}}
+        <div class="alert alert-danger" role="alert">
+            {{this.msg}}
+        </div>
+        {{/each}}
+        {{/if}}
+
+    <form method="POST" action="/pilots_new">
+            <div class="subtitleR">
+                <label for="name">Name</label>
+                <input type="text" name="name" class="form-control">
+            </div>
+            <div class="subtitleR">
+                <label for="country">Country</label>
+                <input type="text" name="country" class="form-control" >
+            </div>
+            <div class="subtitleR">
+                <label for="podiums">Podiums</label>
+                <input type="text" name="podiums" class="form-control" >
+            </div>
+            <div class="subtitleR">
+                <label for="points">Points</label>
+                <input type="text" name="points" class="form-control" >
+            </div>
+            <div class="subtitleR">
+                <label for="gpEntered">Grand Prixes Entered</label>
+                <input type="text" name="gpEntered" class="form-control" >
+            </div>
+            <div class="subtitleR">
+                <label for="wChampionships">Won Championships</label>
+                <input type="text" name="wChampionships" class="form-control" >
+            </div>
+            <div class="subtitleR" >
+                <label for="highestFinish">Highest Finish</label>
+                <input type="text" name="highestFinish" class="form-control" >
+            </div>
+            <div class="subtitleR" >
+                <label for="highestFinish">Birth Date</label>
+                <input type="text" name="birthDate" class="form-control" placeholder="YYYY-MM-DD" >
+            </div>
+            <div class="subtitleR" >
+                <label for="highestFinish">Team Code</label>
+                <input type="text" name="team_ID" class="form-control" >
+            </div>
+           
+           {{#each teams}}
+                <div class="detailR">{{name}}: {{team_ID}}</div>
+            {{/each}}
+
+            <button type="submit" class="btn">Save</button>
+        </form>
+
+    </div>
+</body>
+
+<div class="space">
+    {{> footer}}
+</div>
+
+</div>

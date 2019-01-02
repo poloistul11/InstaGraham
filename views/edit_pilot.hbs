@@ -1,0 +1,53 @@
+<div class="wrapper">
+
+{{> header }}
+
+
+<body background="/img/background.jpg">
+    <div class="container">
+        <h1 class="titleR">{{pilot.name}}</h1>
+    
+    <form method="POST" action="/edit_pilot/:id">
+            <div class="subtitleR">
+                <label for="name">Name</label>
+                <input type="text" name="name" class="form-control" value={{pilot.name}}>
+            </div>
+            <div class="subtitleR">
+                <label for="country">Country</label>
+                <input type="country" name="country" class="form-control" value={{pilot.country}}>
+            </div>
+            <div class="subtitleR">
+                <label for="podiums">Podiums</label>
+                <input type="podiums" name="podiums" class="form-control" value={{pilot.podiums}}>
+            </div>
+            <div class="subtitleR">
+                <label for="points">Points</label>
+                <input type="points" name="points" class="form-control" value={{pilot.points}}>
+            </div>
+            <div class="subtitleR">
+                <label for="gpEntered">Grand Prixes Entered</label>
+                <input type="gpEntered" name="gpEntered" class="form-control" value={{pilot.gpEntered}}>
+            </div>
+            <div class="subtitleR">
+                <label for="wChampionships">Won Championships</label>
+                <input type="wChampionships" name="wChampionships" class="form-control" value={{pilot.wChampionships}}>
+            </div>
+            <div class="subtitleR" >
+                <label for="highestFinish">Highest Finish</label>
+                <input type="highestFinish" name="highestFinish" class="form-control" value={{pilot.highestFinish}}>
+            </div>
+            <div class="subtitleR" style="visibility: hidden">
+                <input type="id" name="id" class="form-control" value={{pilot.pilot_ID}}>
+            </div>
+            
+            <button type="submit" class="btn">Save</button>
+        </form>
+            
+    </div>
+</body>
+
+<div class="space">
+    {{> footer}}
+</div>
+
+</div>

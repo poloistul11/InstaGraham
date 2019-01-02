@@ -1,0 +1,70 @@
+<div class="wrapper">
+
+{{> header }}
+
+
+<body background="/img/background.jpg">
+    <div class="container">
+        <h1 class="titleR">Insert Team</h1>
+    
+        {{#if errors}}
+        {{#each errors}}
+        <div class="alert alert-danger" role="alert">
+            {{this.msg}}
+        </div>
+        {{/each}}
+        {{/if}}
+
+    <form method="POST" action="/teams_new">
+            <div class="subtitleR">
+                <label for="name">Name</label>
+                <input type="text" name="name" class="form-control">
+            </div>
+            <div class="subtitleR">
+                <label for="teamChief">Team Chief</label>
+                <input type="text" name="teamChief" class="form-control" >
+            </div>
+            <div class="subtitleR">
+                <label for="technicalChief">Technical Chief</label>
+                <input type="text" name="technicalChief" class="form-control" >
+            </div>
+            <div class="subtitleR">
+                <label for="chassis">Chasis</label>
+                <input type="text" name="chassis" class="form-control" >
+            </div>
+            <div class="subtitleR">
+                <label for="powerUnit">Power Unit</label>
+                <input type="text" name="powerUnit" class="form-control" >
+            </div>
+            <div class="subtitleR">
+                <label for="firstTeamEntry">First Team Entry</label>
+                <input type="text" name="firstTeamEntry" class="form-control" >
+            </div>
+            <div class="subtitleR" >
+                <label for="worldChampionships">World Championships Won</label>
+                <input type="text" name="worldChampionships" class="form-control" >
+            </div>
+            <div class="subtitleR" >
+                <label for="highestFinish">Highest Race Finish</label>
+                <input type="text" name="highestFinish" class="form-control" >
+            </div>
+            <div class="subtitleR" >
+                <label for="polePositions">Pole Positions</label>
+                <input type="text" name="polePositions" class="form-control" >
+            </div>
+            <div class="subtitleR" >
+                <label for="fastestLaps">Number of Fastest Laps</label>
+                <input type="text" name="fastestLaps" class="form-control" >
+            </div>
+
+            <button type="submit" class="btn">Save</button>
+        </form>
+
+    </div>
+</body>
+
+<div class="space">
+    {{> footer}}
+</div>
+
+</div>

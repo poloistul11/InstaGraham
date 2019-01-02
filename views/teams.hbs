@@ -1,0 +1,74 @@
+<div class="wrapper">
+
+    {{> header }}
+
+    <body background="/img/background.jpg">
+
+        <div class="row marketing">
+            <div class="col-lg-2">
+                <div class="container">
+                    <h1 class="titleR">{{title}}</h1>
+                </div>
+            </div>
+
+
+            <div class="col-lg-3">
+                <button id="insert" onClick="insert()" type="button" class="btnCategory">Insert</button>
+            </div>
+        </div>
+
+        <ol>
+            {{#each teams}}
+            <li class="listTitleR"> {{name}}
+
+                <div class="row marketing">
+                    <div class="col-lg-4">
+                        <div class="detailR">Team Chief: {{teamChief}} </div>
+                        <div class="detailR">Technical Chief: {{technicalChief}}</div>
+                        <div class="detailR">Chasis: {{chassis}}</div>
+                        <div class="detailR">Power Unit: {{powerUnit}}</div>
+                        <div class="detailR">First Entry: {{firstTeamEntry}}</div>
+                    </div>
+
+
+                    <div class="col-lg-4">
+                        <div class="detailR">World Championships: {{worldChampionships}}</div>
+                        <div class="detailR">Highest Race Finish: {{highestRaceFinish}}</div>
+                        <div class="detailR">Pole Positions: {{polePositions}}</div>
+                        <div class="detailR">Fastest Laps # : {{fastestLaps}}</div>
+                    </div>
+
+
+                    <div class="col-lg-3">
+                        <button class="btn" onclick="edit({{json this}})"> Edit</button>
+                        <button class="btn" onclick="deleteTeam({{this.team_ID}})"> Delete</button>
+                    </div>
+
+                </div>
+            </li>
+            {{/each}}
+        </ol>
+
+        <script>
+            function insert() {
+                location.href = "/teams_new";
+            };
+            function edit(teams) {
+                console.log(teams);
+                location.href = "/teams/" + teams.team_ID;
+            };
+        </script>
+
+        <script>
+            function deleteTeam(team_ID) {
+                location.href = "teams_delete/" + team_ID;
+            };
+        </script>
+
+    </body>
+
+    <div class="space">
+        {{> footer}}
+    </div>
+
+</div>
