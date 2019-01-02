@@ -54,11 +54,12 @@ router.post('/register', function (req, res, next) {
   } else {
     const email = req.body.email;
     const password = req.body.password;
+    const username = 'test';
     const db = require('../db.js');
 
 
     var hash = bcrypt.hashSync(password, saltRounds);
-    db.query('INSERT INTO Users(email, password_hash) VALUES (?, ?)', [email, hash], function (error, results, fields) {
+    db.query('INSERT INTO users(email, passwordHash, username) VALUES (?, ?, ?)', [email, hash, username], function (error, results, fields) {
       if (error) throw (error);
 
       db.query('SELECT LAST_INSERT_ID() as user_id', function (error, results, fields) {

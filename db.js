@@ -13,7 +13,7 @@ var connection = mysql.createConnection({
   password: "root",
   socketPath: "/Applications/MAMP/tmp/mysql/mysql.sock",
   port: 8887,
-  database : "F1Championship"
+  database : "InstaGraham"
 })
 
 connection.connect()

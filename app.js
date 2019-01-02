@@ -44,7 +44,7 @@ var options = {
   password: "root",
   socketPath: "/Applications/MAMP/tmp/mysql/mysql.sock",
   port: 8887,
-  database : "F1Championship"
+  database : "InstaGraham"
 };
 var sessionStore = new MySQLStore(options);
 
@@ -74,13 +74,13 @@ passport.use(new LocalStrategy(
     console.log(password);
 
     const db = require('./db');
-    db.query('SELECT user_ID, password_hash FROM Users Where email =\'' + username + '\'', function (err, results, fields) {
+    db.query('SELECT id, passwordHash FROM users Where email =\'' + username + '\'', function (err, results, fields) {
       if (err) { done(err) };
 
       if (results.length == 0) {
         done(null, false);
       } else {
-        var hash = results[0].password_hash;
+        var hash = results[0].passwordHash;
         bcrypt.compare(password, hash, function (err, response) {
           if (response == true) {
             return done(null, { user_id: results[0].user_ID });
