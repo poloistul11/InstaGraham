@@ -36,6 +36,8 @@ router.get('/register', function (req, res, next) {
 
 
 router.post('/register', function (req, res, next) {
+  req.checkBody('username', 'Username field cannot be empty.').notEmpty();
+  req.checkBody('username', 'Username field must not contain spaces').custom(value => !/\s/.test(value));
   req.checkBody('email', 'Email field cannot be empty.').notEmpty();
   req.checkBody('email', 'Email is invalid, please try again.').isEmail();
   req.checkBody('password', 'Password field cannot be empty.').notEmpty();
@@ -54,7 +56,7 @@ router.post('/register', function (req, res, next) {
   } else {
     const email = req.body.email;
     const password = req.body.password;
-    const username = 'test';
+    const username = req.body.username;
     const db = require('../db.js');
 
 
@@ -104,128 +106,51 @@ function authenticationMiddleware() {
 
 
 
-/* Pilot routes */
-router.get('/pilots', authenticationMiddleware(), function (req, res, next) {
-  const db = require('../db.js');
-  var query = "SELECT Pilots.`pilot_ID`, Pilots.`team_ID`, Pilots.`name`, \
-                      Pilots.`country`, Pilots.`podiums`, Pilots.`points`,\
-                      Pilots.`gpEntered`, Pilots.`wChampionships`, \
-                      Pilots.`highestFinish`, Pilots.`birthday`, \
-                      Teams.name AS nameTeam \
-              FROM Pilots \
-              INNER JOIN Teams ON Pilots.team_ID=Teams.team_ID \
-              ORDER BY points DESC";
-  db.query(query, function (err, result, fields) {
-    if (err) res.status(107).send(err);
-    else {
-      var pilots = result
-      res.render('pilots', { title: "Pilots", pilots });
-    }
-  });
+/* Wall routes */
+router.get('/wall', authenticationMiddleware(), function (req, res, next) {
+  // const db = require('../db.js');
+  // var query = "SELECT Pilots.`pilot_ID`, Pilots.`team_ID`, Pilots.`name`, \
+  //                     Pilots.`country`, Pilots.`podiums`, Pilots.`points`,\
+  //                     Pilots.`gpEntered`, Pilots.`wChampionships`, \
+  //                     Pilots.`highestFinish`, Pilots.`birthday`, \
+  //                     Teams.name AS nameTeam \
+  //             FROM Pilots \
+  //             INNER JOIN Teams ON Pilots.team_ID=Teams.team_ID \
+  //             ORDER BY points DESC";
+  // db.query(query, function (err, result, fields) {
+  //   if (err) res.status(107).send(err);
+  //   else {
+  //     var pilots = result
+  res.render('wall', { title: "Wall" });
+  //  }
+  // });
+});
+
+router.get('/add_picture', authenticationMiddleware(), function (req, res, next) {
+  res.status(200).render('./add_picture');
 });
 
 
-router.get('/pilots/:id', authenticationMiddleware(), function (req, res, next) {
-  const db = require('../db.js');
+router.post('/add_picture', authenticationMiddleware(), function (req, res, next) {
 
-  var query = "SELECT * FROM Pilots Where pilot_ID = " + req.params.id;
-  db.query(query, function (err, result, fields) {
-    if (err) res.status(107).send(err);
-    else {
-      console.log(result);
-      res.status(200).render('edit_pilot', { pilot: result[0] });
-    }
-  })
-});
-
-
-router.post('/edit_pilot/:id', authenticationMiddleware(), function (req, res, next) {
-  var name = req.body.name;
-  var country = req.body.country;
-  var podiums = req.body.podiums;
-  var points = req.body.points;
-  var gpEntered = req.body.gpEntered;
-  var wChampionships = req.body.wChampionships;
-  var highestFinish = req.body.highestFinish;
-  var id = req.body.id;
-
-  const db = require('../db.js');
-
-  var query = "UPDATE `Pilots` SET `name`=\"" + name +
-    "\",`country`=\"" + country +
-    "\",`podiums`=\"" + podiums +
-    "\",`points`=\"" + points +
-    "\",`gpEntered`=\"" + gpEntered +
-    "\",`wChampionships`=\"" + wChampionships +
-    "\",`highestFinish`=\"" + highestFinish +
-    "\" " + "WHERE pilot_ID=" + id;
-  console.log(query);
-
-  db.query(query, function (err, result, fields) {
-    if (err) res.status(107).send(err);
-    else {
-      console.log(result);
-      res.status(200).render('success');
-    }
-  })
-
-});
-
-
-router.get('/pilots_new', authenticationMiddleware(), function (req, res, next) {
-  const db = require('../db.js');
-  var query = "SELECT * FROM Teams";
-
-  db.query(query, function (err, result, fields) {
-    if (err) res.status(107).send(err);
-    else {
-      var teams = result;
-      res.status(200).render('./add_pilot', { teams: teams });
-    }
-  });
-});
-
-
-router.post('/pilots_new', authenticationMiddleware(), function (req, res, next) {
-
-  req.checkBody('name', 'Name Field must be a text.').isString();
-  req.checkBody('country', 'Country Field must be a text.').isString();
-  req.checkBody('podiums', 'Podiums Field must be a number.').isNumeric();
-  req.checkBody('points', 'Points Field must be a number.').isNumeric();
-  req.checkBody('gpEntered', 'GP Entered Field must be a number.').isNumeric();
-  req.checkBody('wChampionships', 'Won Championships Field must be a number.').isNumeric();
-  req.checkBody('highestFinish', 'Highest Finish Field must be a number.').isNumeric();
-  req.checkBody('birthDate', 'Birth Date Field must be a date.').isISO8601();
-  req.checkBody('team_ID', 'Team Code Field must be completed.').isNumeric();
+  req.checkBody('link', 'Link field must be a URL').isURL();
+  req.checkBody('link', 'Link field can not be empty').notEmpty();
+  req.checkBody('description', 'Description field can not be empty').notEmpty();
 
   const errors = req.validationErrors();
   //teams = req.body;
   if (errors) {
-    res.render('add_pilot', {
+    res.render('add_picture', {
       errors: errors
-      //teams: teams
     });
   } else {
-    var name = req.body.name;
-    var country = req.body.country;
-    var podiums = req.body.podiums;
-    var points = req.body.points;
-    var gpEntered = req.body.gpEntered;
-    var wChampionships = req.body.wChampionships;
-    var highestFinish = req.body.highestFinish;
-    var birthDate = req.body.birthDate;
-    var team_ID = req.body.team_ID;
-
-    var query = "INSERT INTO `Pilots`(`team_ID`, `name`, `country` ," +
-      "`podiums`, `points`, `gpEntered`, `wChampionships`, `highestFinish`,`birthday`) VALUES (" + team_ID + ", \"" + name + "\", \"" + country +
-      "\", " + podiums + ", " + points + ", " + gpEntered + ", "
-      + wChampionships + ", " + highestFinish + ", \"" + birthDate + "\")";
-
-    console.log(query);
+    var owner = req.session.passport.user.user_id;
+    var link = req.body.link;
+    var description = req.body.description;
 
     const db = require('../db.js');
 
-    db.query(query, function (err, result, fields) {
+    db.query( "INSERT INTO photos(owner, link, description) VALUES (?, ?, ?)", [owner, link, description], function (err, result, fields) {
       if (err) res.status(107).send(err);
       else {
         res.status(200).render('./success');
@@ -463,7 +388,7 @@ router.post('/results/teams2', authenticationMiddleware(), function (req, res, n
               FROM CircuitTeam \
               INNER JOIN Teams ON CircuitTeam.team_ID = Teams.team_ID \
               INNER JOIN Circuits ON CircuitTeam.circuit_ID = Circuits.circuit_ID \
-              WHERE Teams.name LIKE \'%" +req.body.team + "%\' \
+              WHERE Teams.name LIKE \'%" + req.body.team + "%\' \
               ORDER BY place ASC"
 
   db.query(query, function (err, result, fields) {
@@ -485,10 +410,10 @@ router.post('/results/pilots2', authenticationMiddleware(), function (req, res, 
               FROM CircuitPilot\
               INNER JOIN Pilots ON CircuitPilot.pilot_ID = Pilots.pilot_ID \
               INNER JOIN Circuits ON CircuitPilot.circuit_ID = Circuits.circuit_ID \
-              WHERE Pilots.name LIKE \"%"+req.body.pilot+"%\"\
+              WHERE Pilots.name LIKE \"%"+ req.body.pilot + "%\"\
               ORDER BY place ASC";
 
-      console.log(query);
+  console.log(query);
   db.query(query, function (err, result, fields) {
     if (err) res.status(107).send(err);
     else {
@@ -532,27 +457,29 @@ router.get('/stats', authenticationMiddleware(), function (req, res, next) {
 });
 
 
-router.post('/stats/positionP', authenticationMiddleware(), function(req, res, next){
+router.post('/stats/positionP', authenticationMiddleware(), function (req, res, next) {
   const db = require('../db.js');
 
   var query = "SELECT P.pilot_ID, P.name,\
                 ( SELECT COUNT(*) FROM CircuitPilot CP WHERE\
-                  CP.pilot_ID = P.pilot_ID AND CP.place <= "+ req.body.pozitie +" ) AS NrCurse\
+                  CP.pilot_ID = P.pilot_ID AND CP.place <= "+ req.body.pozitie + " ) AS NrCurse\
                FROM Pilots P";
 
-  db.query(query,function(err, result, fields){
-    if(err)
+  db.query(query, function (err, result, fields) {
+    if (err)
       res.status(107).send(err);
-    else{
-      res.status(200).render('results2', {title: "Numarul de clasari pe o pozitie superioara celei introduse",
-                              result1: result});
+    else {
+      res.status(200).render('results2', {
+        title: "Numarul de clasari pe o pozitie superioara celei introduse",
+        result1: result
+      });
     }
   });
 
 });
 
 
-router.post('/stats/positionT', authenticationMiddleware(), function(req, res, next){
+router.post('/stats/positionT', authenticationMiddleware(), function (req, res, next) {
   const db = require('../db.js');
 
   var query = "SELECT T.team_ID, T.name,\
@@ -561,51 +488,53 @@ router.post('/stats/positionT', authenticationMiddleware(), function(req, res, n
               FROM Teams T\
               ORDER BY team_ID ";
 
-  db.query(query,function(err, result, fields){
-    if(err)
+  db.query(query, function (err, result, fields) {
+    if (err)
       res.status(107).send(err);
-    else{
+    else {
       var linie = result[0];
       console.log(linie.name);
-      res.status(200).render('results2', {title: "Numarul de curse la care echipele au participat intre datele date",
-                            result2: result });
+      res.status(200).render('results2', {
+        title: "Numarul de curse la care echipele au participat intre datele date",
+        result2: result
+      });
     }
   });
 });
 
 
-router.post('/stats/averageT', authenticationMiddleware(), function(req, res, next){
+router.post('/stats/averageT', authenticationMiddleware(), function (req, res, next) {
   const db = require('../db.js');
 
   var query = "SELECT T.team_ID, T.name,\
                 ( SELECT AVG(CT.place) FROM CircuitTeam CT WHERE\ CT.team_ID=" + req.body.code + " ) AS medie\
               FROM Teams T\
-              WHERE T.team_ID=" + req.body.code ;
+              WHERE T.team_ID=" + req.body.code;
 
-  db.query(query,function(err, result, fields){
-    if(err)
+  db.query(query, function (err, result, fields) {
+    if (err)
       res.status(107).send(err);
-    else{ 
-      res.status(200).render('results2', {title:"Media pozitiilor echipelor", result3: result });
+    else {
+      res.status(200).render('results2', { title: "Media pozitiilor echipelor", result3: result });
     }
   });
 });
 
 
-router.post('/stats/participateT', authenticationMiddleware(), function(req, res, next){
+router.post('/stats/participateT', authenticationMiddleware(), function (req, res, next) {
   const db = require('../db.js');
 
-  var query ="SELECT T.team_ID, T.name\
+  var query = "SELECT T.team_ID, T.name\
               FROM Teams T\
               WHERE T.team_ID NOT IN\
                 (SELECT T.team_ID FROM Teams T, CircuitTeam CT\
                 WHERE T.team_ID = CT.team_ID)";
 
-  db.query(query,function(err, result, fields){
-    if(err)
+  db.query(query, function (err, result, fields) {
+    if (err)
       res.status(107).send(err);
-    else{
-      res.status(200).render('results2', {title:"Echipe care nu au participat la nici o cursa", result4: result });
+    else {
+      res.status(200).render('results2', { title: "Echipe care nu au participat la nici o cursa", result4: result });
     }
   });
 });

@@ -21,20 +21,17 @@
         <div class="header clearfix">
             <nav>
                 
-                <h1 class="titleR">Formula 1 Championship</h1>
+                <h1 class="titleR">InstaGraham</h1>
                 <ul class="nav nav-pills float-left">
-                    <li class="nav-item"><a class="a" href="/">Home</a></li>
+                    <li class="nav-item"><a class="b" href="/">Home</a></li>
 
                     {{#if isAuthenticated}}
-                    <li class="nav-item"><a class="a" href="/pilots">Pilots</a></li>
-                    <li class="nav-item"><a class="a" href="/teams">Teams</a></li>
-                    <li class="nav-item"><a class="a" href="/circuits">Circuits</a></li>
-                    <li class="nav-item"><a class="a" href="/results">Results</a></li>
-                    <li class="nav-item"><a class="a" href="/stats">Stats</a></li>
-                    <li class="nav-item"><a class="a" href="/logout">Logout</a></li>
+                    <li class="nav-item"><a class="b" href="/wall">Wall</a></li>
+                    <li class="nav-item"><a class="b" href="/profile">Baker's Profile</a></li>
+                    <li class="nav-item"><a class="b" href="/logout">Logout</a></li>
                     {{else}}
-                    <li class="nav-item"><a class="a" href="/login">Login</a></li>
-                    <li class="nav-item"><a class="a" href="/register">Register</a></li>
+                    <li class="nav-item"><a class="b" href="/login">Login</a></li>
+                    <li class="nav-item"><a class="b" href="/register">Register</a></li>
                     {{/if}}
 
                 </ul>

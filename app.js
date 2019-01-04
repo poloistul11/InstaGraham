@@ -69,12 +69,12 @@ app.use('/users', users);
 app.use(express.static("public"));
 
 passport.use(new LocalStrategy(
-  function (username, password, done) {
-    console.log(username);
+  function (email, password, done) {
+    console.log(email);
     console.log(password);
 
     const db = require('./db');
-    db.query('SELECT id, passwordHash FROM users Where email =\'' + username + '\'', function (err, results, fields) {
+    db.query('SELECT id, passwordHash FROM users Where email =\'' + email + '\'', function (err, results, fields) {
       if (err) { done(err) };
 
       if (results.length == 0) {
@@ -83,7 +83,7 @@ passport.use(new LocalStrategy(
         var hash = results[0].passwordHash;
         bcrypt.compare(password, hash, function (err, response) {
           if (response == true) {
-            return done(null, { user_id: results[0].user_ID });
+            return done(null, { user_id: results[0].id });
           } else {
             return done(null, false);
           }

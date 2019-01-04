@@ -4,22 +4,28 @@ body {
   .titleR{
     margin-top: 30px;
     margin-bottom: 20px;
-    color: whitesmoke;
+    color: orangered;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: bolder;
   }
   
   .subtitleR{
     margin-bottom: 20px;
-    color: whitesmoke;
+    color: rgb(255, 136, 0);
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: bold;
   }
 
   .subtitleR1{
     margin-top: 60px;
     margin-bottom: 20px;
-    color: whitesmoke;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    color: rgb(255, 136, 0);
+    font-weight: bold;
   }
 
   .textR{
-    color: whitesmoke;
+    color: rgb(255, 136, 0);
   }
 
   .radioList{
@@ -61,32 +67,42 @@ body {
   }
 
   .a {
-    color: #dc3545;
+    color:orangered;
     text-decoration: none;
     background-color: transparent;
     -webkit-text-decoration-skip: objects;
     margin-right: 55px;
 }
 
+.b {
+  color:orangered;
+  text-decoration: none;
+  background-color: transparent;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-weight: bold;
+  -webkit-text-decoration-skip: objects;
+  margin-right: 55px;
+}
+
 .btn{
-  color: #840410;
-  background-color: #d20236;
-  border-color: #bd2130;
+  color: orange;
+  background-color: orangered;
+  border-color:orangered;
   margin-top: 10px;
 }
 
 .btnBot{
-  color: #840410;
-  background-color: #d20236;
-  border-color: #bd2130;
+  color: orange;
+  background-color: orangered;
+  border-color:orangered;
   margin-top: 10px;
   margin-bottom: 60px;
 }
 
 .btnCategory{
-  color: #840410;
-  background-color: #d20236;
-  border-color: #bd2130;
+  color: orange;
+  background-color: orangered;
+  border-color:orangered;
   font-size: 30px;
   padding-left: 30px;
   padding-right: 30px;
@@ -98,10 +114,26 @@ body {
   border-bottom-right-radius: 4px;
 }
 
+.btnR{
+  background-color: rgb(255, 123, 0);
+  color: rgb(255, 196, 0);
+  border-color:orange;
+  font-size: 30px;
+  font-weight: bolder;
+  padding-left: 17px;
+  padding-right: 17px;
+  margin-top: 30px;
+  margin-right: 50px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
 .btnBack{
-  color: #840410;
-  background-color: #d20236;
-  border-color: #bd2130;
+  color: orange;
+  background-color: orangered;
+  border-color:orangered;
   font-size: 30px;
   padding-left: 30px;
   padding-right: 30px;
@@ -115,7 +147,7 @@ body {
 }
 
 .footer {
-  color: white;
+  color: orangered;
   position: absolute;
   right: 0;
   bottom: 0;
@@ -135,12 +167,28 @@ body {
 
 .white {
   margin-top: 50px;
-  color: white;
+  color: rgb(255, 136, 0);
+  font-size: 110%;
 }
 
 .red {
   margin-bottom: 30px;
-  color: red;
+  color: orangered;
+}
+
+.transp{
+  opacity: 0.5;
+  filter: alpha(opacity=50);
 }
   
+.imgR{
+  width: 500px;
+  height: 500px;
+}
+
+.bold{
+  font-weight: bold;
+}
+
+
 /*# sourceMappingURL=style.css.map*/

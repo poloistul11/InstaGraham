@@ -1,0 +1,39 @@
+<div class="wrapper">
+
+{{> header }}
+
+
+<body background="/img/background.jpg">
+    <div class="container">
+        <h1 class="titleR">Add a picture to Bakers' Wall</h1>
+    
+        {{#if errors}}
+        {{#each errors}}
+        <div class="alert alert-danger" role="alert">
+            {{this.msg}}
+        </div>
+        {{/each}}
+        {{/if}}
+
+    <form method="POST" action="/add_picture">
+            <div class="subtitleR">
+                <label for="link">Picture Link</label>
+                <input type="text" name="link" class="form-control">
+            </div>
+
+            <div class="subtitleR">
+                <label for="description">Description</label>
+                <input type="text" name="description" class="form-control">
+            </div>
+
+            <button type="submit" class="btn">Upload</button>
+        </form>
+
+    </div>
+</body>
+
+<div class="space">
+    {{> footer}}
+</div>
+
+</div>
