@@ -7,6 +7,20 @@ body {
     color: orangered;
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-weight: bolder;
+  } 
+
+  .titleR1{
+    margin-top: 35px;
+    color: orangered;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: bolder;
+  } 
+  
+  .titleR2{
+    margin-top: 5px;
+    color: rgb(255, 153, 0);
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: bolder;
   }
   
   .subtitleR{
@@ -89,6 +103,18 @@ body {
   background-color: orangered;
   border-color:orangered;
   margin-top: 10px;
+}
+
+
+.btn1{
+  color: orange;
+  background-color: orangered;
+  border-color:orangered;
+  border: 1px;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: .25rem;
 }
 
 .btnBot{
@@ -188,6 +214,11 @@ body {
 
 .bold{
   font-weight: bold;
+}
+
+.photoSpacer{
+  margin-top: 20px;
+  margin-bottom: 15px;
 }
 
 

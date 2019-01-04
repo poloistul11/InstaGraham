@@ -4,7 +4,7 @@
 
     <body background="/img/background.jpg">
         <div class="row marketing">
-            <div class="col-lg-2">
+            <div class="col-lg-4">
                 <div class="container">
                     <h1 class="titleR">{{title}}</h1>
                 </div>
@@ -16,15 +16,50 @@
             </div>
         </div>
 
-        <div class="imgR">
-            <img class="imgR" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Korb_mit_Br%C3%B6tchen.JPG/2560px-Korb_mit_Br%C3%B6tchen.JPG">;
+        {{#each photos}}
+
+        <div class="photoSpacer">
+            <div class="row marketing">
+                <div class="col-lg-6">
+                    <div class="imgR">
+                        <img class="imgR" src={{link}}>;
+                    </div>
+                </div>
+
+
+                <div class="col-lg-6">
+                    <div class="titleR1">Uploaded by : {{name}}</div>
+                    <div class="titleR1">Likes: {{likes}}</div>
+                    <div class="titleR1">Description:</div>
+                    <div class="titleR2">{{description}} </div>
+
+                    {{#each ../comments}}
+                    {{#if_eq photoTarget 1}}
+                    <div class="titleR2">{{this.text}}</div>
+                    {{/if_eq}}
+                    {{/each}}
+
+                    <form method="POST" action="/add_comment">
+
+                        <div class="row marketing">
+                            <div class="col-lg-8">
+                                <div class="subtitleR">
+                                    <input type="text" name="comment" class="form-control" placeholder="type comment">
+                                </div>
+                                <div
+                            </div>
+                            <div class="col-lg-2">
+                                <button type="submit" class="btn1">post</button>
+                            </div>
+                    </form>
+
+                </div>
+            </div>
         </div>
 
-        <div class="imgR">
-            <img class="imgR" src="https://stackoverflow.com/questions/16739908/make-image-fill-div-completely-without-stretching">;
-        </div>
+        {{/each}}
 
-        
+
 
         <!-- <ol>
             {{#each pilots}}
@@ -61,6 +96,10 @@
             function insert() {
                 location.href = "/add_picture";
             };
+
+            function log() {
+
+            }
         </script>
     </body>
 
