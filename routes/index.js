@@ -192,14 +192,14 @@ router.post('/add_picture', authenticationMiddleware(), function (req, res, next
 });
 
 
-router.post('/add_comment', authenticationMiddleware(), function (req, res, next) {
+router.post('/add_comment/:id', authenticationMiddleware(), function (req, res, next) {
+  var photoTarget = req.params.id;
   var owner = req.session.passport.user.user_id;
-  var link = req.body.link;
-  var description = req.body.description;
+  var text = req.body.comment;
 
   const db = require('../db.js');
 
-  db.query("INSERT INTO photos(owner, link, description) VALUES (?, ?, ?)", [owner, link, description], function (err, result, fields) {
+  db.query("INSERT INTO comments(`photoTarget`, `userOrigin`, `text`) VALUES (?, ?, ?)", [photoTarget, owner, text], function (err, result, fields) {
     if (err) res.status(107).send(err);
     else {
       res.status(200).render('./success');
