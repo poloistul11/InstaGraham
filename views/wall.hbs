@@ -33,10 +33,8 @@
                     <div class="titleR1">Description:</div>
                     <div class="titleR2">{{description}} </div>
 
-                    {{#each ../comments}}
-                    {{#if_eq photoTarget 1}}
+                    {{#each comments}}
                     <div class="titleR2">{{this.text}}</div>
-                    {{/if_eq}}
                     {{/each}}
 
                     <form method="POST" action="/add_comment">

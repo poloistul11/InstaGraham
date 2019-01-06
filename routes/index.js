@@ -118,7 +118,7 @@ router.get('/wall', authenticationMiddleware(), function (req, res, next) {
   db.query(query1, function (err, result, fields) {
     if (err) res.status(107).send(err);
     else {
-      var photos = result;
+      var photos = JSON.parse(JSON.stringify(result));
 
       var query2 = "SELECT c.id, c.text, c.photoTarget, c.userOrigin, u.username AS name\
                     FROM comments c \
@@ -127,118 +127,214 @@ router.get('/wall', authenticationMiddleware(), function (req, res, next) {
       db.query(query2, function (err, result, fields) {
         if (err) res.status(107).send(err);
         else {
-          var comments = result;
-          res.render('wall', { title: "Baker's Wall", photos, comments });
+          var comments = JSON.parse(JSON.stringify(result));
+
+          for (var i = 0; i < photos.length; i++) {
+            photos[i].comments = [];
+          }
+
+          var commentAux = {
+            id: 0,
+            text: "text",
+            photoTarget: 0,
+            userOrigin: 0,
+            name: "name"
+          }
+
+          for (var i = 0; i < photos.length; i++) {
+            for (var j = 0; j < comments.length; j++) {
+              if (photos[i].id == comments[j].photoTarget) {
+                commentAux = comments[j];
+              
+                photos[i].comments.push(commentAux);
+              }
+            }
+          }
         }
+        res.render('wall', { title: "Baker's Wall", photos});
       });
     }
   });
 });
 
 
-  router.get('/add_picture', authenticationMiddleware(), function (req, res, next) {
-    res.status(200).render('./add_picture');
-  });
+router.get('/add_picture', authenticationMiddleware(), function (req, res, next) {
+  res.status(200).render('./add_picture');
+});
 
 
-  router.post('/add_picture', authenticationMiddleware(), function (req, res, next) {
+router.post('/add_picture', authenticationMiddleware(), function (req, res, next) {
 
-    req.checkBody('link', 'Link field must be a URL').isURL();
-    req.checkBody('link', 'Link field can not be empty').notEmpty();
-    req.checkBody('description', 'Description field can not be empty').notEmpty();
+  req.checkBody('link', 'Link field must be a URL').isURL();
+  req.checkBody('link', 'Link field can not be empty').notEmpty();
+  req.checkBody('description', 'Description field can not be empty').notEmpty();
 
-    const errors = req.validationErrors();
-    //teams = req.body;
-    if (errors) {
-      res.render('add_picture', {
-        errors: errors
-      });
-    } else {
-      var owner = req.session.passport.user.user_id;
-      var link = req.body.link;
-      var description = req.body.description;
+  const errors = req.validationErrors();
+  //teams = req.body;
+  if (errors) {
+    res.render('add_picture', {
+      errors: errors
+    });
+  } else {
+    var owner = req.session.passport.user.user_id;
+    var link = req.body.link;
+    var description = req.body.description;
 
-      const db = require('../db.js');
+    const db = require('../db.js');
 
-      db.query("INSERT INTO photos(owner, link, description) VALUES (?, ?, ?)", [owner, link, description], function (err, result, fields) {
-        if (err) res.status(107).send(err);
-        else {
-          res.status(200).render('./success');
-        }
-      });
+    db.query("INSERT INTO photos(owner, link, description) VALUES (?, ?, ?)", [owner, link, description], function (err, result, fields) {
+      if (err) res.status(107).send(err);
+      else {
+        res.status(200).render('./success');
+      }
+    });
+  }
+});
+
+
+router.post('/add_comment', authenticationMiddleware(), function (req, res, next) {
+  var owner = req.session.passport.user.user_id;
+  var link = req.body.link;
+  var description = req.body.description;
+
+  const db = require('../db.js');
+
+  db.query("INSERT INTO photos(owner, link, description) VALUES (?, ?, ?)", [owner, link, description], function (err, result, fields) {
+    if (err) res.status(107).send(err);
+    else {
+      res.status(200).render('./success');
     }
   });
 
+});
 
-  router.post('/add_comment', authenticationMiddleware(), function (req, res, next) {
-      var owner = req.session.passport.user.user_id;
-      var link = req.body.link;
-      var description = req.body.description;
 
-      const db = require('../db.js');
 
-      db.query("INSERT INTO photos(owner, link, description) VALUES (?, ?, ?)", [owner, link, description], function (err, result, fields) {
-        if (err) res.status(107).send(err);
-        else {
-          res.status(200).render('./success');
-        }
-      });
-  
+
+
+router.get('/pilots_delete/:id', authenticationMiddleware(), function (req, res, next) {
+  res.render('./confirm', { pilot_ID: req.params.id, team_ID: 0 });
+});
+
+
+router.get('/pilots_delete_final/:id', authenticationMiddleware(), function (req, res, next) {
+  const db = require('../db.js');
+  var query = "DELETE FROM `Pilots` WHERE pilot_ID=" + req.params.id;
+
+  db.query(query, function (err, result, fields) {
+    if (err) res.status(107).send(err);
+    else {
+      console.log(result);
+      res.status(200).render('success');
+    }
+  })
+});
+
+
+
+/* Team routes */
+router.get('/teams', authenticationMiddleware(), function (req, res, next) {
+  const db = require('../db.js');
+  var query = "SELECT * FROM Teams ORDER BY worldChampionships DESC";
+  db.query(query, function (err, result, fields) {
+    if (err) res.status(107).send(err);
+    else {
+      var teams = result;
+      res.render('teams', { title: "Teams", teams });
+    }
   });
+});
 
 
+router.get('/teams/:id', authenticationMiddleware(), function (req, res, next) {
+  const db = require('../db.js');
+
+  var query = "SELECT * FROM Teams Where team_ID = " + req.params.id;
+  db.query(query, function (err, result, fields) {
+    if (err) res.status(107).send(err);
+    else {
+      console.log(result);
+      res.status(200).render('edit_team', { team: result[0] });
+    }
+  })
+});
 
 
+router.post('/edit_team/:id', authenticationMiddleware(), function (req, res, next) {
+  var name = req.body.name;
+  var teamChief = req.body.teamChief;
+  var technicalChief = req.body.technicalChief;
+  var chassis = req.body.chassis;
+  var powerUnit = req.body.powerUnit;
+  var firstTeamEntry = req.body.firstTeamEntry;
+  var worldChampionships = req.body.worldChampionships;
+  var id = req.body.id;
 
-  router.get('/pilots_delete/:id', authenticationMiddleware(), function (req, res, next) {
-    res.render('./confirm', { pilot_ID: req.params.id, team_ID: 0 });
-  });
+  const db = require('../db.js');
+
+  var query = "UPDATE `Teams` SET `name`=\"" + name +
+    "\",`teamChief`=\"" + teamChief +
+    "\",`technicalChief`=\"" + technicalChief +
+    "\",`chassis`=\"" + chassis +
+    "\",`powerUnit`=\"" + powerUnit +
+    "\",`firstTeamEntry`=\"" + firstTeamEntry +
+    "\",`worldChampionships`=\"" + worldChampionships +
+    "\" " + "WHERE team_ID=" + id;
+  console.log(query);
+
+  db.query(query, function (err, result, fields) {
+    if (err) res.status(107).send(err);
+    else {
+      console.log(result);
+      res.status(200).render('success');
+    }
+  })
+});
 
 
-  router.get('/pilots_delete_final/:id', authenticationMiddleware(), function (req, res, next) {
-    const db = require('../db.js');
-    var query = "DELETE FROM `Pilots` WHERE pilot_ID=" + req.params.id;
-
-    db.query(query, function (err, result, fields) {
-      if (err) res.status(107).send(err);
-      else {
-        console.log(result);
-        res.status(200).render('success');
-      }
-    })
-  });
+router.get('/teams_new', authenticationMiddleware(), function (req, res, next) {
+  res.status(200).render('./add_team');
+});
 
 
+router.get('/teams_delete/:id', authenticationMiddleware(), function (req, res, next) {
+  res.render('./confirm', { pilot_ID: 0, team_ID: req.params.id });
+});
 
-  /* Team routes */
-  router.get('/teams', authenticationMiddleware(), function (req, res, next) {
-    const db = require('../db.js');
-    var query = "SELECT * FROM Teams ORDER BY worldChampionships DESC";
-    db.query(query, function (err, result, fields) {
-      if (err) res.status(107).send(err);
-      else {
-        var teams = result;
-        res.render('teams', { title: "Teams", teams });
-      }
+
+router.get('/teams_delete_final/:id', authenticationMiddleware(), function (req, res, next) {
+  const db = require('../db.js');
+  var query = "DELETE FROM `Teams` WHERE team_ID=" + req.params.id;
+
+  db.query(query, function (err, result, fields) {
+    if (err) res.status(107).send(err);
+    else {
+      console.log(result);
+      res.status(200).render('success');
+    }
+  })
+});
+
+
+router.post('/teams_new', authenticationMiddleware(), function (req, res, next) {
+
+  req.checkBody('name', 'Name Field must be a non-empty text.').isString().notEmpty();
+  req.checkBody('teamChief', 'Team Chief Field must be a non-empty text.').isString().notEmpty();
+  req.checkBody('technicalChief', 'Technical Chief Field must be a non-empty text.').isString().notEmpty();
+  req.checkBody('chassis', 'Chasis Field must be a non-empty text.').isString().notEmpty();
+  req.checkBody('powerUnit', 'Power Unit Field must be a non-empty text.').isString().notEmpty();
+  req.checkBody('firstTeamEntry', 'First Team Entry Field must be a year.').isNumeric();
+  req.checkBody('worldChampionships', 'Won World Championships Field must be a number.').isNumeric();
+  req.checkBody('highestFinish', 'Highest Finish Field must be a number.').isNumeric();
+  req.checkBody('polePositions', 'Pole Positions Field must be a number.').isNumeric();
+  req.checkBody('fastestLaps', 'Fastest Laps Field must be a number.').isNumeric();
+
+  const errors = req.validationErrors();
+  if (errors) {
+    res.render('add_team', {
+      errors: errors
     });
-  });
-
-
-  router.get('/teams/:id', authenticationMiddleware(), function (req, res, next) {
-    const db = require('../db.js');
-
-    var query = "SELECT * FROM Teams Where team_ID = " + req.params.id;
-    db.query(query, function (err, result, fields) {
-      if (err) res.status(107).send(err);
-      else {
-        console.log(result);
-        res.status(200).render('edit_team', { team: result[0] });
-      }
-    })
-  });
-
-
-  router.post('/edit_team/:id', authenticationMiddleware(), function (req, res, next) {
+  } else {
     var name = req.body.name;
     var teamChief = req.body.teamChief;
     var technicalChief = req.body.technicalChief;
@@ -246,109 +342,35 @@ router.get('/wall', authenticationMiddleware(), function (req, res, next) {
     var powerUnit = req.body.powerUnit;
     var firstTeamEntry = req.body.firstTeamEntry;
     var worldChampionships = req.body.worldChampionships;
-    var id = req.body.id;
+    var highestFinish = req.body.highestFinish;
+    var polePositions = req.body.polePositions;
+    var fastestLaps = req.body.fastestLaps;
 
-    const db = require('../db.js');
+    var query = "INSERT INTO `Teams`(`name`, `teamChief`, `technicalChief`,`chassis`, `powerUnit`," +
+      "`firstTeamEntry`, `worldChampionships`, `highestRaceFinish`, `polePositions`, `fastestLaps`)" +
+      "VALUES ( \"" + name + "\", \"" + teamChief + "\", \"" + technicalChief + "\", \"" + chassis + "\", \"" +
+      powerUnit + "\", " + firstTeamEntry + ", " + worldChampionships + ", " + highestFinish + ", " +
+      polePositions + ", " + fastestLaps + ")";
 
-    var query = "UPDATE `Teams` SET `name`=\"" + name +
-      "\",`teamChief`=\"" + teamChief +
-      "\",`technicalChief`=\"" + technicalChief +
-      "\",`chassis`=\"" + chassis +
-      "\",`powerUnit`=\"" + powerUnit +
-      "\",`firstTeamEntry`=\"" + firstTeamEntry +
-      "\",`worldChampionships`=\"" + worldChampionships +
-      "\" " + "WHERE team_ID=" + id;
     console.log(query);
 
-    db.query(query, function (err, result, fields) {
-      if (err) res.status(107).send(err);
-      else {
-        console.log(result);
-        res.status(200).render('success');
-      }
-    })
-  });
-
-
-  router.get('/teams_new', authenticationMiddleware(), function (req, res, next) {
-    res.status(200).render('./add_team');
-  });
-
-
-  router.get('/teams_delete/:id', authenticationMiddleware(), function (req, res, next) {
-    res.render('./confirm', { pilot_ID: 0, team_ID: req.params.id });
-  });
-
-
-  router.get('/teams_delete_final/:id', authenticationMiddleware(), function (req, res, next) {
     const db = require('../db.js');
-    var query = "DELETE FROM `Teams` WHERE team_ID=" + req.params.id;
 
     db.query(query, function (err, result, fields) {
       if (err) res.status(107).send(err);
       else {
-        console.log(result);
-        res.status(200).render('success');
+        res.status(200).render('./success');
       }
-    })
-  });
-
-
-  router.post('/teams_new', authenticationMiddleware(), function (req, res, next) {
-
-    req.checkBody('name', 'Name Field must be a non-empty text.').isString().notEmpty();
-    req.checkBody('teamChief', 'Team Chief Field must be a non-empty text.').isString().notEmpty();
-    req.checkBody('technicalChief', 'Technical Chief Field must be a non-empty text.').isString().notEmpty();
-    req.checkBody('chassis', 'Chasis Field must be a non-empty text.').isString().notEmpty();
-    req.checkBody('powerUnit', 'Power Unit Field must be a non-empty text.').isString().notEmpty();
-    req.checkBody('firstTeamEntry', 'First Team Entry Field must be a year.').isNumeric();
-    req.checkBody('worldChampionships', 'Won World Championships Field must be a number.').isNumeric();
-    req.checkBody('highestFinish', 'Highest Finish Field must be a number.').isNumeric();
-    req.checkBody('polePositions', 'Pole Positions Field must be a number.').isNumeric();
-    req.checkBody('fastestLaps', 'Fastest Laps Field must be a number.').isNumeric();
-
-    const errors = req.validationErrors();
-    if (errors) {
-      res.render('add_team', {
-        errors: errors
-      });
-    } else {
-      var name = req.body.name;
-      var teamChief = req.body.teamChief;
-      var technicalChief = req.body.technicalChief;
-      var chassis = req.body.chassis;
-      var powerUnit = req.body.powerUnit;
-      var firstTeamEntry = req.body.firstTeamEntry;
-      var worldChampionships = req.body.worldChampionships;
-      var highestFinish = req.body.highestFinish;
-      var polePositions = req.body.polePositions;
-      var fastestLaps = req.body.fastestLaps;
-
-      var query = "INSERT INTO `Teams`(`name`, `teamChief`, `technicalChief`,`chassis`, `powerUnit`," +
-        "`firstTeamEntry`, `worldChampionships`, `highestRaceFinish`, `polePositions`, `fastestLaps`)" +
-        "VALUES ( \"" + name + "\", \"" + teamChief + "\", \"" + technicalChief + "\", \"" + chassis + "\", \"" +
-        powerUnit + "\", " + firstTeamEntry + ", " + worldChampionships + ", " + highestFinish + ", " +
-        polePositions + ", " + fastestLaps + ")";
-
-      console.log(query);
-
-      const db = require('../db.js');
-
-      db.query(query, function (err, result, fields) {
-        if (err) res.status(107).send(err);
-        else {
-          res.status(200).render('./success');
-        }
-      });
-    }
-  });
+    });
+  }
+});
 
 
 
-  /* Circuit routes */
-  router.get('/circuits', authenticationMiddleware(), function (req, res, next) {
-    const db = require('../db.js');
-    var query = "SELECT Circuits.`circuit_ID`, Circuits.`name`, Circuits.`mostWinsPilot`, \
+/* Circuit routes */
+router.get('/circuits', authenticationMiddleware(), function (req, res, next) {
+  const db = require('../db.js');
+  var query = "SELECT Circuits.`circuit_ID`, Circuits.`name`, Circuits.`mostWinsPilot`, \
                       Circuits.`mostWinsTeam`, Circuits.`timesHeld`, Circuits.`firstHeld`, \
                       Circuits.`circuitLength`, Circuits.`laps`, Teams.name AS nameTeam, \
                       Pilots.name as namePilot \
@@ -356,37 +378,37 @@ router.get('/wall', authenticationMiddleware(), function (req, res, next) {
               INNER JOIN Teams ON Circuits.mostWinsTeam = Teams.team_ID \
               INNER JOIN Pilots ON Circuits.mostWinsPilot = Pilots.pilot_ID \
               ORDER BY circuit_ID";
-    db.query(query, function (err, result, fields) {
-      if (err) res.status(107).send(err);
-      else {
-        var circuits = result;
-        res.render('circuits', { title: "Circuits", circuits });
-      }
-    });
+  db.query(query, function (err, result, fields) {
+    if (err) res.status(107).send(err);
+    else {
+      var circuits = result;
+      res.render('circuits', { title: "Circuits", circuits });
+    }
   });
+});
 
 
 
-  /* Result routes */
-  router.get('/results', authenticationMiddleware(), function (req, res, next) {
-    const db = require('../db.js');
+/* Result routes */
+router.get('/results', authenticationMiddleware(), function (req, res, next) {
+  const db = require('../db.js');
 
-    var query = "SELECT * FROM Circuits";
-    db.query(query, function (err, result, fields) {
-      if (err) res.status(107).send(err);
-      else {
-        console.log(result);
-        var results = result;
-        res.render('results', { title: "Results", results });
-      }
-    });
+  var query = "SELECT * FROM Circuits";
+  db.query(query, function (err, result, fields) {
+    if (err) res.status(107).send(err);
+    else {
+      console.log(result);
+      var results = result;
+      res.render('results', { title: "Results", results });
+    }
   });
+});
 
 
-  router.get('/results/teams/:id', authenticationMiddleware(), function (req, res, next) {
-    const db = require('../db.js');
+router.get('/results/teams/:id', authenticationMiddleware(), function (req, res, next) {
+  const db = require('../db.js');
 
-    var query = "SELECT CircuitTeam.`ID`, CircuitTeam.`team_ID`, CircuitTeam.`circuit_ID`, \
+  var query = "SELECT CircuitTeam.`ID`, CircuitTeam.`team_ID`, CircuitTeam.`circuit_ID`, \
                       CircuitTeam.`dateRace`, CircuitTeam.`place`, CircuitTeam.time, Teams.name AS nameTeam, \
                       Circuits.name AS nameCircuit \
               FROM CircuitTeam \
@@ -395,24 +417,24 @@ router.get('/wall', authenticationMiddleware(), function (req, res, next) {
               WHERE CircuitTeam.circuit_ID = " + req.params.id + " \
               ORDER BY place ASC"
 
-    db.query(query, function (err, result, fields) {
-      if (err) res.status(107).send(err);
-      else {
-        console.log(result);
-        var results = result;
-        var location = result[0].nameCircuit;
-        var date = result[0].dateRace;
-        res.render('results_teams', { title: "Teams - Results", location, date, results });
-      }
-    });
+  db.query(query, function (err, result, fields) {
+    if (err) res.status(107).send(err);
+    else {
+      console.log(result);
+      var results = result;
+      var location = result[0].nameCircuit;
+      var date = result[0].dateRace;
+      res.render('results_teams', { title: "Teams - Results", location, date, results });
+    }
   });
+});
 
 
 
-  router.post('/results/teams2', authenticationMiddleware(), function (req, res, next) {
-    const db = require('../db.js');
+router.post('/results/teams2', authenticationMiddleware(), function (req, res, next) {
+  const db = require('../db.js');
 
-    var query = "SELECT CircuitTeam.`ID`, CircuitTeam.`team_ID`, CircuitTeam.`circuit_ID`, \
+  var query = "SELECT CircuitTeam.`ID`, CircuitTeam.`team_ID`, CircuitTeam.`circuit_ID`, \
                       CircuitTeam.`dateRace`, CircuitTeam.`place`, CircuitTeam.time, Teams.name AS nameTeam, \
                       Circuits.name AS nameCircuit \
               FROM CircuitTeam \
@@ -421,21 +443,21 @@ router.get('/wall', authenticationMiddleware(), function (req, res, next) {
               WHERE Teams.name LIKE \'%" + req.body.team + "%\' \
               ORDER BY place ASC"
 
-    db.query(query, function (err, result, fields) {
-      if (err) res.status(107).send(err);
-      else {
-        console.log(result);
-        var results = result;
-        res.render('results_teams2', { title: "Teams - Results", results });
-      }
-    });
+  db.query(query, function (err, result, fields) {
+    if (err) res.status(107).send(err);
+    else {
+      console.log(result);
+      var results = result;
+      res.render('results_teams2', { title: "Teams - Results", results });
+    }
   });
+});
 
 
-  router.post('/results/pilots2', authenticationMiddleware(), function (req, res, next) {
-    const db = require('../db.js');
+router.post('/results/pilots2', authenticationMiddleware(), function (req, res, next) {
+  const db = require('../db.js');
 
-    var query = "SELECT CircuitPilot.ID ,CircuitPilot.pilot_ID, CircuitPilot.circuit_ID , CircuitPilot.place, \
+  var query = "SELECT CircuitPilot.ID ,CircuitPilot.pilot_ID, CircuitPilot.circuit_ID , CircuitPilot.place, \
 	              Pilots.name AS namePilot, Circuits.name AS nameCircuit \
               FROM CircuitPilot\
               INNER JOIN Pilots ON CircuitPilot.pilot_ID = Pilots.pilot_ID \
@@ -443,22 +465,22 @@ router.get('/wall', authenticationMiddleware(), function (req, res, next) {
               WHERE Pilots.name LIKE \"%"+ req.body.pilot + "%\"\
               ORDER BY place ASC";
 
-    console.log(query);
-    db.query(query, function (err, result, fields) {
-      if (err) res.status(107).send(err);
-      else {
-        console.log(result);
-        var results = result;
-        res.render('results_pilots2', { title: "Pilots - Results", results });
-      }
-    });
+  console.log(query);
+  db.query(query, function (err, result, fields) {
+    if (err) res.status(107).send(err);
+    else {
+      console.log(result);
+      var results = result;
+      res.render('results_pilots2', { title: "Pilots - Results", results });
+    }
   });
+});
 
 
-  router.get('/results/pilots/:id', authenticationMiddleware(), function (req, res, next) {
-    const db = require('../db.js');
+router.get('/results/pilots/:id', authenticationMiddleware(), function (req, res, next) {
+  const db = require('../db.js');
 
-    var query = "SELECT CircuitPilot.`ID`, CircuitPilot.`pilot_ID`, CircuitPilot.`circuit_ID`, \
+  var query = "SELECT CircuitPilot.`ID`, CircuitPilot.`pilot_ID`, CircuitPilot.`circuit_ID`, \
                       CircuitPilot.`dateRace`, CircuitPilot.`place`, Pilots.name AS namePilot, \
                       Circuits.name AS nameCircuit \
               FROM CircuitPilot \
@@ -467,107 +489,107 @@ router.get('/wall', authenticationMiddleware(), function (req, res, next) {
               WHERE CircuitPilot.circuit_ID = " + req.params.id + " \
               ORDER BY place ASC"
 
-    db.query(query, function (err, result, fields) {
-      if (err) res.status(107).send(err);
-      else {
-        console.log(result);
-        var results = result;
-        var location = result[0].nameCircuit;
-        var date = result[0].dateRace;
-        res.render('results_pilots', { title: "Pilots - Results", location, date, results });
-      }
-    });
+  db.query(query, function (err, result, fields) {
+    if (err) res.status(107).send(err);
+    else {
+      console.log(result);
+      var results = result;
+      var location = result[0].nameCircuit;
+      var date = result[0].dateRace;
+      res.render('results_pilots', { title: "Pilots - Results", location, date, results });
+    }
   });
+});
 
 
 
-  /* Stats routes */
-  router.get('/stats', authenticationMiddleware(), function (req, res, next) {
-    res.status(200).render('stats', { title: "Stats" });
-  });
+/* Stats routes */
+router.get('/stats', authenticationMiddleware(), function (req, res, next) {
+  res.status(200).render('stats', { title: "Stats" });
+});
 
 
-  router.post('/stats/positionP', authenticationMiddleware(), function (req, res, next) {
-    const db = require('../db.js');
+router.post('/stats/positionP', authenticationMiddleware(), function (req, res, next) {
+  const db = require('../db.js');
 
-    var query = "SELECT P.pilot_ID, P.name,\
+  var query = "SELECT P.pilot_ID, P.name,\
                 ( SELECT COUNT(*) FROM CircuitPilot CP WHERE\
                   CP.pilot_ID = P.pilot_ID AND CP.place <= "+ req.body.pozitie + " ) AS NrCurse\
                FROM Pilots P";
 
-    db.query(query, function (err, result, fields) {
-      if (err)
-        res.status(107).send(err);
-      else {
-        res.status(200).render('results2', {
-          title: "Numarul de clasari pe o pozitie superioara celei introduse",
-          result1: result
-        });
-      }
-    });
-
+  db.query(query, function (err, result, fields) {
+    if (err)
+      res.status(107).send(err);
+    else {
+      res.status(200).render('results2', {
+        title: "Numarul de clasari pe o pozitie superioara celei introduse",
+        result1: result
+      });
+    }
   });
 
+});
 
-  router.post('/stats/positionT', authenticationMiddleware(), function (req, res, next) {
-    const db = require('../db.js');
 
-    var query = "SELECT T.team_ID, T.name,\
+router.post('/stats/positionT', authenticationMiddleware(), function (req, res, next) {
+  const db = require('../db.js');
+
+  var query = "SELECT T.team_ID, T.name,\
                 ( SELECT COUNT(*) FROM CircuitTeam CT WHERE CT.team_ID = T.team_ID AND\
                  CT.dateRace BETWEEN '" + req.body.data1 + "' AND '" + req.body.data2 + "') AS NrCurse\
               FROM Teams T\
               ORDER BY team_ID ";
 
-    db.query(query, function (err, result, fields) {
-      if (err)
-        res.status(107).send(err);
-      else {
-        var linie = result[0];
-        console.log(linie.name);
-        res.status(200).render('results2', {
-          title: "Numarul de curse la care echipele au participat intre datele date",
-          result2: result
-        });
-      }
-    });
+  db.query(query, function (err, result, fields) {
+    if (err)
+      res.status(107).send(err);
+    else {
+      var linie = result[0];
+      console.log(linie.name);
+      res.status(200).render('results2', {
+        title: "Numarul de curse la care echipele au participat intre datele date",
+        result2: result
+      });
+    }
   });
+});
 
 
-  router.post('/stats/averageT', authenticationMiddleware(), function (req, res, next) {
-    const db = require('../db.js');
+router.post('/stats/averageT', authenticationMiddleware(), function (req, res, next) {
+  const db = require('../db.js');
 
-    var query = "SELECT T.team_ID, T.name,\
+  var query = "SELECT T.team_ID, T.name,\
                 ( SELECT AVG(CT.place) FROM CircuitTeam CT WHERE\ CT.team_ID=" + req.body.code + " ) AS medie\
               FROM Teams T\
               WHERE T.team_ID=" + req.body.code;
 
-    db.query(query, function (err, result, fields) {
-      if (err)
-        res.status(107).send(err);
-      else {
-        res.status(200).render('results2', { title: "Media pozitiilor echipelor", result3: result });
-      }
-    });
+  db.query(query, function (err, result, fields) {
+    if (err)
+      res.status(107).send(err);
+    else {
+      res.status(200).render('results2', { title: "Media pozitiilor echipelor", result3: result });
+    }
   });
+});
 
 
-  router.post('/stats/participateT', authenticationMiddleware(), function (req, res, next) {
-    const db = require('../db.js');
+router.post('/stats/participateT', authenticationMiddleware(), function (req, res, next) {
+  const db = require('../db.js');
 
-    var query = "SELECT T.team_ID, T.name\
+  var query = "SELECT T.team_ID, T.name\
               FROM Teams T\
               WHERE T.team_ID NOT IN\
                 (SELECT T.team_ID FROM Teams T, CircuitTeam CT\
                 WHERE T.team_ID = CT.team_ID)";
 
-    db.query(query, function (err, result, fields) {
-      if (err)
-        res.status(107).send(err);
-      else {
-        res.status(200).render('results2', { title: "Echipe care nu au participat la nici o cursa", result4: result });
-      }
-    });
+  db.query(query, function (err, result, fields) {
+    if (err)
+      res.status(107).send(err);
+    else {
+      res.status(200).render('results2', { title: "Echipe care nu au participat la nici o cursa", result4: result });
+    }
   });
+});
 
 
-  module.exports = router;
+module.exports = router;
