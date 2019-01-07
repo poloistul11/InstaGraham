@@ -19,61 +19,74 @@
         {{#each photos}}
 
         <div class="photoSpacer">
-            <div class="imgR">
-                <img class="imgR" src={{link}}>
-            </div>
 
-
-
-            <div class="titleR1">Uploaded by : {{name}}</div>
-            <div class="titleR1">Likes: {{likes}}</div>
-            <div class="titleR1">Description:</div>
-            <div class="titleR2">{{description}} </div>
-
-            <div class="titleR1">Comments:</div>
-            {{#each comments}}
-            <div class="marginL">
-                <div class="row marketing">
-                    <div class="col-lg-2.1">
-                        <div class="titleR3">{{this.name}}:</div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="titleR2">{{this.text}}</div>
+            <div class="row marketing">
+                <div class="col-lg-6">
+                    <div class="imgR">
+                        <img class="imgR" src={{link}}>
                     </div>
                 </div>
-            </div>
-            {{/each}}
 
-            <form method="POST" action="/add_comment/{{this.id}}">
-                <div class="row marketing">
-                    <div class="col-lg-8">
-                        <div class="subtitleR">
-                            <input type="text" name="comment" class="form-control" placeholder="type comment">
+
+                <div class="col-lg-6">
+                    <div class="titleR1">Uploaded by : {{name}}</div>
+
+                    <div class="row marketing">
+                        <div class="col-lg-3">
+                            <div class="titleR1">Likes: {{likes}}</div>
                         </div>
-                        <div </div> <div class="col-lg-2">
-                            <button type="submit({{json this}})" class="btn1">post</button>
+                        <div class="col-lg-2">
+                            <button id="like" onClick="like()" type="button" class="btnR1">Like</button>
                         </div>
                     </div>
+                    <div class="titleR1">Description:</div>
+                    <div class="titleR2">{{description}} </div>
+
+                    <div class="titleR1">Comments:</div>
+                    {{#each comments}}
+                    <div class="marginL">
+                        <div class="row marketing">
+                            <div class="col-lg-2.1">
+                                <div class="titleR3">{{this.name}}:</div>
+                            </div>
+                            <div class="col-lg-7">
+                                <div class="titleR2">{{this.text}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+
+                    <form method="POST" action="/add_comment/{{this.id}}">
+                        <div class="row marketing">
+                            <div class="col-lg-9">
+                                <div class="subtitleR">
+                                    <input type="text" name="comment" class="form-control" placeholder="type comment">
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <button type="submit({{json this}})" class="btn1">post</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
-</div>
 
-{{/each}}
+        {{/each}}
 
-<script>
-    function insert() {
-        location.href = "/add_picture";
-    };
+        <script>
+            function insert() {
+                location.href = "/add_picture";
+            };
 
-    function log() {
+            function log() {
 
-    }
-</script>
-</body>
+            }
+        </script>
+    </body>
 
-<div class="space">
-    {{> footer}}
-</div>
+    <div class="space">
+        {{> footer}}
+    </div>
 
 </div>
