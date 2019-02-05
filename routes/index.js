@@ -209,6 +209,37 @@ router.post('/add_comment/:id', authenticationMiddleware(), function (req, res, 
 });
 
 
+router.get('/like/:id', authenticationMiddleware(), function (req, res, next) {
+  const db = require('../db.js');
+
+  var query = "SELECT * FROM Likes WHERE userOrigin = " + req.session.passport.user.user_id + " AND photoTarget = " + req.params.id;
+  db.query(query, function (err, result, fields) {
+    if (err) res.status(107).send(err);
+    else {
+      if(result.length == 0){
+        db.query("INSERT INTO likes(`photoTarget`, `userOrigin`) VALUES (?, ?)", [req.params.id, req.session.passport.user.user_id], function (err, result, fields) {
+          if (err) res.status(107).send(err);
+          else {
+            res.status(200).redirect('../wall');
+          }
+        });
+      }
+      else {
+        db.query("DELETE FROM likes WHERE userOrigin = " + req.session.passport.user.user_id + " AND photoTarget = " + req.params.id, [req.params.id, req.session.passport.user.user_id], function (err, result, fields) {
+        if (err) res.status(107).send(err);
+        else {
+          res.status(200).redirect('../wall');
+        }
+      });
+      }
+
+      //res.status(200).render('edit_team', { team: result[0] });
+    }
+  })
+});
+
+
+
 //Profile routes
 router.get('/profile', authenticationMiddleware(), function (req, res, next) {
   const db = require('../db.js');
@@ -264,17 +295,17 @@ router.get('/profile', authenticationMiddleware(), function (req, res, next) {
 
 //Confirmation routes
 router.get('/photo_delete/:id', authenticationMiddleware(), function (req, res, next) {
-  res.render('./confirm', { photo_ID: req.params.id });
+  res.render('./confirm', { photoId: req.params.id });
 });
 
 router.get('/confirm', authenticationMiddleware(), function (req, res, next) {
-  res.render('./confirm', { photo_ID: req.params.id });
+  res.render('./confirm', { photoId: req.params.id });
 });
 
 
-router.get('/pilots_delete_final/:id', authenticationMiddleware(), function (req, res, next) {
+router.get('/photo_delete_final/:id', authenticationMiddleware(), function (req, res, next) {
   const db = require('../db.js');
-  var query = "DELETE FROM `Pilots` WHERE pilot_ID=" + req.params.id;
+  var query = "DELETE FROM `photos` WHERE id=" + req.params.id;
 
   db.query(query, function (err, result, fields) {
     if (err) res.status(107).send(err);

@@ -36,7 +36,7 @@
                             <div class="titleR1">Likes: {{likes}}</div>
                         </div>
                         <div class="col-lg-2">
-                            <button id="like" onClick="like()" type="button" class="btnR1">Like</button>
+                            <button id="like" onClick="like({{json this}})" type="button" class="btnR1">Like</button>
                         </div>
                     </div>
                     <div class="titleR1">Description:</div>
@@ -77,6 +77,11 @@
         <script>
             function insert() {
                 location.href = "/add_picture";
+            };
+
+            function like(photos) {
+                console.log(photos);
+                location.href = "/like/" + photos.id;
             };
         </script>
     </body>

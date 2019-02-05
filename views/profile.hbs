@@ -25,7 +25,7 @@
 
                 <div class="col-lg-6">
                     <div class="col-lg-2">
-                        <button onClick="deletePhoto({{this}})" type="button" class="btnR1">Delete</button>
+                        <button onClick="deletePhoto({{this.id}})" type="button" class="btnR1">Delete</button>
                     </div>
 
                     <div class="row marketing">
@@ -50,30 +50,18 @@
                     </div>
                     {{/each}}
 
-                    <form method="POST" action="/add_comment/{{this.id}}">
-                        <div class="row marketing">
-                            <div class="col-lg-9">
-                                <div class="subtitleR">
-                                    <input type="text" name="comment" class="form-control" placeholder="type comment">
-                                </div>
-                            </div>
-                            <div class="col-lg-2">
-                                <button type="submit({{json this}})" class="btn1">post</button>
-                            </div>
-                        </div>
-                    </form>
+
                 </div>
             </div>
 
             {{/each}}
 
             <script>
-
-                function deletePhoto(photos) {
-                    
-                    location.href = "/confirm";
+                function deletePhoto(photoId) {
+                    location.href = "/photo_delete/" + photoId;
                 }
             </script>
+
     </body>
 
     <div class="space">
